@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Análisis</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    </head>
+    <body>
+    <header>
+        <h1>📊 Dashboard de Análisis de Datos</h1>
+        <p>Sube un archivo CSV o Excel y obtén estadísticas y gráficos automáticamente</p>
+    </header>
+
+    <main>
+        <section id="upload-zone">
+        <div id="drop-area">
+            <span class="icon">📁</span>
+            <p>Arrastra tu archivo aquí</p>
+            <label for="file-input" class="btn-primary">Seleccionar archivo</label>
+            <input type="file" id="file-input" accept=".csv,.xlsx,.xls" hidden>
+            <p class="hint">CSV · Excel (.xlsx/.xls) · Máx 16 MB</p>
+        </div>
+        </section>
+
+        <div id="loader" hidden>
+        <div class="spinner"></div>
+        <p>Analizando datos...</p>
+        </div>
+
+        <section id="results" hidden>
+        <div class="info-bar">
+            <span id="info-filas"></span>
+            <span id="info-cols"></span>
+            <span id="info-tendencia"></span>
+        </div>
+
+        <div class="card">
+            <h2>Serie de datos</h2>
+            <canvas id="chart-main"></canvas>
+        </div>
+
+        <div class="card">
+            <h2>Predicción — próximos 5 pasos</h2>
+            <canvas id="chart-pred"></canvas>
+            <p id="pred-info" class="hint" style="margin-top:.8rem"></p>
+        </div>
+
+        <div class="card" id="stats-card">
+            <h2>Estadísticas descriptivas</h2>
+            <div id="stats-container"></div>
+        </div>
+        </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+</body>
+</html>
