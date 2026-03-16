@@ -72,7 +72,6 @@ def get_correlation(df):
     }
 
 def get_outliers(df):
-    """Detecta outliers por columna usando el método IQR."""
     numeric = df.select_dtypes(include=[np.number])
     outliers = {}
     for col in numeric.columns:
@@ -84,18 +83,17 @@ def get_outliers(df):
         outliers[col] = {
             'cantidad':   int(mask.sum()),
             'porcentaje': round(float(mask.sum() / len(data) * 100), 2),
-            'valores':    data[mask].round(2).tolist()[:10]
+            'valores':    [round(float(v), 2) for v in data[mask].tolist()[:10]]
         }
     return outliers
 
 def get_nulls_summary(df):
-    """Resumen de valores nulos por columna."""
     total = len(df)
     return {
         col: {
-            'nulos':       int(df[col].isna().sum()),
-            'porcentaje':  round(float(df[col].isna().sum() / total * 100), 2),
-            'tipo':        str(df[col].dtype)
+            'nulos':      int(df[col].isna().sum()),
+            'porcentaje': round(float(df[col].isna().sum() / total * 100), 2),
+            'tipo':       str(df[col].dtype)
         }
         for col in df.columns
     }
