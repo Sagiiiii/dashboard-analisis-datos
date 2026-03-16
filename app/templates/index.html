@@ -3,57 +3,177 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard de Análisis</title>
+    <title>DataDash — Análisis Inteligente</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     </head>
     <body>
+
     <header>
-        <h1>📊 Dashboard de Análisis de Datos</h1>
-        <p>Sube un archivo CSV o Excel y obtén estadísticas y gráficos automáticamente</p>
+    <div class="header-icon">📊</div>
+    <div>
+        <h1>Data<span>Dash</span></h1>
+        <p>Análisis inteligente de CSV y Excel — estadísticas, gráficos y predicciones automáticas</p>
+    </div>
     </header>
 
     <main>
-        <section id="upload-zone">
+
+    <!-- UPLOAD CARD -->
+    <section id="upload-card">
+        <div class="steps">
+        <div class="step active" id="step1"><span class="step-num">1</span> Sube tu archivo</div>
+        <div class="step-divider"></div>
+        <div class="step" id="step2"><span class="step-num">2</span> Selecciona hoja</div>
+        <div class="step-divider"></div>
+        <div class="step" id="step3"><span class="step-num">3</span> Previsualiza</div>
+        <div class="step-divider"></div>
+        <div class="step" id="step4"><span class="step-num">4</span> Analiza</div>
+        </div>
+
         <div id="drop-area">
-            <span class="icon">📁</span>
-            <p>Arrastra tu archivo aquí</p>
-            <label for="file-input" class="btn-primary">Seleccionar archivo</label>
-            <input type="file" id="file-input" accept=".csv,.xlsx,.xls" hidden>
-            <p class="hint">CSV · Excel (.xlsx/.xls) · Máx 16 MB</p>
+        <span class="icon">📁</span>
+        <p>Arrastra tu archivo aquí o haz clic para seleccionar</p>
+        <label for="file-input" class="btn-mint" style="display:inline-flex;cursor:pointer">
+            Seleccionar archivo
+        </label>
+        <input type="file" id="file-input" accept=".csv,.xlsx,.xls" hidden>
+        <div class="file-types" style="margin-top:1rem">
+            <span class="badge-type">CSV</span>
+            <span class="badge-type">Excel .xlsx</span>
+            <span class="badge-type">Excel .xls</span>
+            <span class="badge-type">Multi-hoja</span>
         </div>
-        </section>
+        </div>
 
-        <div id="loader" hidden>
+        <!-- Selector de hoja (solo Excel) -->
+        <div id="sheet-selector" hidden>
+        <label>Este Excel tiene varias hojas — selecciona cuál analizar:</label>
+        <select id="sheet-select"></select>
+        <button class="btn-outline" id="btn-change-sheet" style="margin-top:.8rem">
+            Previsualizar hoja
+        </button>
+        </div>
+
+        <!-- Preview -->
+        <div id="preview-section" hidden>
+        <h3 id="preview-label"></h3>
+        <div class="table-wrap">
+            <table id="preview-table">
+            <thead id="preview-head"></thead>
+            <tbody id="preview-body"></tbody>
+            </table>
+        </div>
+        </div>
+
+        <!-- Acciones -->
+        <div class="btn-actions" id="btn-actions" hidden>
+        <button class="btn-mint" id="btn-analyze">⚡ Analizar datos</button>
+        <button class="btn-outline" id="btn-reset">↺ Subir otro archivo</button>
+        </div>
+    </section>
+
+    <!-- LOADER -->
+    <div id="loader" hidden>
         <div class="spinner"></div>
-        <p>Analizando datos...</p>
-        </div>
+        <p style="color:var(--text-muted)">Analizando datos...</p>
+    </div>
 
-        <section id="results" hidden>
+    <!-- RESULTADOS -->
+    <section id="results" hidden>
+
+        <!-- Pills resumen -->
         <div class="info-bar">
-            <span id="info-filas"></span>
-            <span id="info-cols"></span>
-            <span id="info-tendencia"></span>
+        <div class="pill">Filas: <strong id="info-filas">—</strong></div>
+        <div class="pill">Columnas: <strong id="info-cols">—</strong></div>
+        <div class="pill">Tendencia: <strong id="info-tendencia">—</strong></div>
+        <div class="pill">R²: <strong id="info-r2">—</strong></div>
+        </div>
+
+        <!-- GRÁFICOS -->
+        <div class="charts-grid">
+
+        <div class="card full">
+            <div class="card-header">
+            <div class="card-icon">📈</div>
+            <h2>Series temporales</h2>
+            </div>
+            <canvas id="chart-line"></canvas>
         </div>
 
         <div class="card">
-            <h2>Serie de datos</h2>
-            <canvas id="chart-main"></canvas>
+            <div class="card-header">
+            <div class="card-icon">📊</div>
+            <h2>Comparación (barras)</h2>
+            </div>
+            <canvas id="chart-bar"></canvas>
         </div>
 
         <div class="card">
-            <h2>Predicción — próximos 5 pasos</h2>
+            <div class="card-header">
+            <div class="card-icon">🥧</div>
+            <h2>Distribución (%)</h2>
+            </div>
+            <canvas id="chart-pie"></canvas>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+            <div class="card-icon">🕸️</div>
+            <h2>Perfil (radar)</h2>
+            </div>
+            <canvas id="chart-radar"></canvas>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+            <div class="card-icon">🔵</div>
+            <h2>Correlación (scatter)</h2>
+            </div>
+            <canvas id="chart-scatter"></canvas>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+            <div class="card-icon">🔮</div>
+            <h2>Predicción</h2>
+            </div>
             <canvas id="chart-pred"></canvas>
-            <p id="pred-info" class="hint" style="margin-top:.8rem"></p>
+            <p id="pred-info" style="font-size:.78rem;color:var(--text-muted);margin-top:.6rem"></p>
         </div>
 
-        <div class="card" id="stats-card">
+        </div>
+
+        <!-- ESTADÍSTICAS -->
+        <div class="card">
+        <div class="card-header">
+            <div class="card-icon">📐</div>
             <h2>Estadísticas descriptivas</h2>
-            <div id="stats-container"></div>
         </div>
-        </section>
-    </main>
+        <div id="stats-container"></div>
+        </div>
 
-    <script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+        <!-- CORRELACIÓN TABLA -->
+        <div class="card" id="corr-card" hidden>
+        <div class="card-header">
+            <div class="card-icon">🔗</div>
+            <h2>Matriz de correlación</h2>
+        </div>
+        <div class="corr-table-wrap" id="corr-container"></div>
+        </div>
+
+        <!-- OUTLIERS -->
+        <div class="card">
+        <div class="card-header">
+            <div class="card-icon">⚠️</div>
+            <h2>Detección de valores atípicos (outliers)</h2>
+        </div>
+        <div id="outliers-container"></div>
+        </div>
+
+    </section>
+</main>
+
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
 </body>
 </html>
